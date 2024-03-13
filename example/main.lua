@@ -10,5 +10,5 @@ function love.update(dt)
 end
 
 function love.draw()
-
+    GameStateManager:draw(dt)
 end
