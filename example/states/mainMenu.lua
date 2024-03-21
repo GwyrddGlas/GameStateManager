@@ -1,14 +1,15 @@
-local GameStateManager = require("GameStateManager") 
-local MainMenu = require("states/mainMenu")
+local MainMenu = {}
 
-function love.load()
-    GameStateManager:setState(MainMenu)
+function MainMenu:enter()
+    print("Entered")
 end
 
-function love.update(dt)   
-    GameStateManager:update(dt)
-end
-
-function love.draw()
+function MainMenu:update(dt)
 
 end
+
+function MainMenu:draw()
+
+end
+
+return MainMenu
