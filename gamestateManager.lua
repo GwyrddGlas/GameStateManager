@@ -12,10 +12,12 @@ function GameStateManager:getState()
 end
 
 function GameStateManager:setState(newState)
+    assert(newState == nil or type(newState) == "table", "newState must be a table")
+    
     self.previousState = self.currentState
     self.currentState = newState
 
-    if self.currentState.enter then
+    if self.currentState and self.currentState.enter then
         self.currentState:enter()
     end
 end
@@ -69,7 +71,7 @@ function GameStateManager:textinput(dt)
 end
 
 function GameStateManager:update(dt)
-    if self.currentState and self.currentState.update then
+    if type(self.currentState) == "table" and self.currentState.update then
         self.currentState:update(dt)
     end
 end
