@@ -25,16 +25,16 @@ Each state is a Lua table with functions that correspond to LÖVE's callback fun
 
 ```lua
 local menuState = {
-    enter = function(self)
+    enter = function()
         print("Entering menu state")
     end,
-    update = function(self, dt)
+    update = function(dt)
         -- Update menu items
     end,
-    draw = function(self)
+    draw = function()
         -- Draw menu UI
     end,
-    keypressed = function(self, key)
+    keypressed = function(key, scancode, isrepeat)
         if key == "return" then
             -- Start the game
         end
