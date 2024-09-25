@@ -24,6 +24,8 @@ end
 function GameStateManager:setState(newState)
     assertState(newState)
     
+    if self.currentState == newState then return end
+
     self.previousState = self.currentState
     self.currentState = newState
 
@@ -32,6 +34,21 @@ function GameStateManager:setState(newState)
         if self.currentState.enter then
             self.currentState:enter()
         end
+    end
+end
+
+function GameStateManager:reloadState()
+    if self.currentState then
+        assertFunction(self.currentState, "enter")
+        if self.currentState.enter then
+            self.currentState:enter()
+        end
+    end
+end
+
+function GameStateManager:revertState()
+    if self.previousState then
+        self:setState(self.previousState)
     end
 end
 
