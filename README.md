@@ -62,8 +62,6 @@ end
 function love.draw()
     GameStateManager:draw()
 end
-
--- Delegate other callback functions as needed...
 ```
 
 ## API
@@ -71,6 +69,8 @@ end
 - `GameStateManager:setState(newState)`: Set the current state. The new state's `enter` method will be called if it exists.
 - `GameStateManager:getState()`: Get the current state.
 - `GameStateManager:getPreviousState()`: Get the previous state before the last state switch.
+- `GameStateManager:revertState()`:  Reverts to the previously set state.
+- `GameStateManager:reloadState()`: Reloads the current state.
 
 The GameStateManager automatically delegates the following LÖVE callbacks to the current state if they are defined:
 - `update(dt)`
