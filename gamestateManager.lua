@@ -1,6 +1,6 @@
 local GameStateManager = {
     currentState = nil,
-    previousState = nil
+    stateStack = {}
 }
 
 local function assertState(state)
@@ -14,7 +14,7 @@ local function assertFunction(state, funcName)
 end
 
 function GameStateManager:getPreviousState()
-    return self.previousState
+    return self.stateStack[#self.stateStack]
 end
 
 function GameStateManager:getState()
@@ -23,10 +23,13 @@ end
 
 function GameStateManager:setState(newState)
     assertState(newState)
-    
+
     if self.currentState == newState then return end
 
-    self.previousState = self.currentState
+    if self.currentState then
+        table.insert(self.stateStack, self.currentState)
+    end
+
     self.currentState = newState
 
     if self.currentState then
@@ -47,14 +50,22 @@ function GameStateManager:reloadState()
 end
 
 function GameStateManager:revertState()
-    if self.previousState then
-        self:setState(self.previousState)
+    if #self.stateStack > 0 then
+        self.currentState = table.remove(self.stateStack)
+        
+        if self.currentState then
+            assertFunction(self.currentState, "enter")
+            if self.currentState.enter then
+                self.currentState:enter()
+            end
+        end
     end
 end
 
 function GameStateManager:mousemoved(x, y, ...)
     assert(type(x) == "number", "x must be a number")
     assert(type(y) == "number", "y must be a number")
+
     if self.currentState then
         assertFunction(self.currentState, "mousemoved")
         if self.currentState.mousemoved then
@@ -66,6 +77,7 @@ end
 function GameStateManager:wheelmoved(x, y)
     assert(type(x) == "number", "x must be a number")
     assert(type(y) == "number", "y must be a number")
+
     if self.currentState then
         assertFunction(self.currentState, "wheelmoved")
         if self.currentState.wheelmoved then
@@ -78,6 +90,7 @@ function GameStateManager:mousepressed(x, y, button)
     assert(type(x) == "number", "x must be a number")
     assert(type(y) == "number", "y must be a number")
     assert(type(button) == "number", "button must be a number")
+
     if self.currentState then
         assertFunction(self.currentState, "mousepressed")
         if self.currentState.mousepressed then
@@ -90,6 +103,7 @@ function GameStateManager:mousereleased(x, y, button)
     assert(type(x) == "number", "x must be a number")
     assert(type(y) == "number", "y must be a number")
     assert(type(button) == "number", "button must be a number")
+
     if self.currentState then
         assertFunction(self.currentState, "mousereleased")
         if self.currentState.mousereleased then
@@ -102,6 +116,7 @@ function GameStateManager:keypressed(key, scancode, isrepeat)
     assert(type(key) == "string", "key must be a string")
     assert(type(scancode) == "string", "scancode must be a string")
     assert(type(isrepeat) == "boolean", "isrepeat must be a boolean")
+
     if self.currentState then
         assertFunction(self.currentState, "keypressed")
         if self.currentState.keypressed then
@@ -113,6 +128,7 @@ end
 function GameStateManager:keyreleased(key, scancode)
     assert(type(key) == "string", "key must be a string")
     assert(type(scancode) == "string", "scancode must be a string")
+
     if self.currentState then
         assertFunction(self.currentState, "keyreleased")
         if self.currentState.keyreleased then
@@ -123,6 +139,7 @@ end
 
 function GameStateManager:textinput(text)
     assert(type(text) == "string", "text must be a string")
+
     if self.currentState then
         assertFunction(self.currentState, "textinput")
         if self.currentState.textinput then
@@ -133,6 +150,7 @@ end
 
 function GameStateManager:update(dt)
     assert(type(dt) == "number", "dt must be a number")
+
     if self.currentState then
         assertFunction(self.currentState, "update")
         if self.currentState.update then
@@ -162,6 +180,7 @@ end
 function GameStateManager:resize(w, h)
     assert(type(w) == "number", "w must be a number")
     assert(type(h) == "number", "h must be a number")
+
     if self.currentState then
         assertFunction(self.currentState, "resize")
         if self.currentState.resize then
