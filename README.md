@@ -14,8 +14,17 @@ A simple and flexible state management library for [LÖVE](https://love2d.org/).
 2. Require the GameStateManager in your main game file:
 
     ```lua
-    local GameStateManager = require("GameStateManager")
+        GameStateManager = require("GameStateManager")
     ```
+
+## Contributing
+
+Contributions to the GameState library are welcome! Please feel free to submit pull requests or report issues on the GitHub repository.
+
+## Projects Using GameStateManager
+If you're using GameState in your project, we'd love to feature it here!
+
+- [lovefocus](https://github.com/tokisuno/lovefocus) – Pomodoro Timer.
 
 ## Usage
 
@@ -83,10 +92,6 @@ The GameStateManager automatically delegates the following LÖVE callbacks to th
 - `wheelmoved(x, y)`
 - `textinput(text)`
 - `quit()`
-
-## Contributing
-
-Contributions to the GameState library are welcome! Please feel free to submit pull requests or report issues on the GitHub repository.
 
 ## License
 
