@@ -139,6 +139,7 @@ end
 
 function GameStateManager:textinput(text)
     assert(type(text) == "string", "text must be a string")
+    assert(love.keyboard.hasTextInput(), "Text input is disabled. Call love.keyboard.setTextInput(true) to enable it.")
 
     if self.currentState then
         assertFunction(self.currentState, "textinput")
