@@ -24,6 +24,13 @@ end
 function GameStateManager:setState(newState)
     assertState(newState)
 
+    if self.currentState then
+        if self.currentState.quit then
+            assertFunction(self.currentState, "quit")
+            self.currentState:quit()
+        end
+    end
+
     if self.currentState == newState then return end
 
     if self.currentState then
@@ -51,6 +58,11 @@ end
 
 function GameStateManager:revertState()
     if #self.stateStack > 0 then
+        if self.currentState.quit then
+            assertFunction(self.currentState, "quit")
+            self.currentState:quit()
+        end
+        
         self.currentState = table.remove(self.stateStack)
         
         if self.currentState then
@@ -70,6 +82,15 @@ function GameStateManager:mousemoved(x, y, ...)
         assertFunction(self.currentState, "mousemoved")
         if self.currentState.mousemoved then
             self.currentState:mousemoved(x, y, ...)
+        end
+    end
+end
+
+function GameStateManager:joystickpressed(js, button)
+    if self.currentState then
+        assertFunction(self.currentState, "joystickpressed")
+        if self.currentState.joystickpressed then
+            self.currentState:joystickpressed(js, button)
         end
     end
 end
