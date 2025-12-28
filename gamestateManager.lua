@@ -3,13 +3,10 @@ local GameStateManager = {
     stateStack = {}
 }
 
-local function assertState(state)
-    assert(state == nil or type(state) == "table", "State must be a table or nil")
-end
-
-local function assertFunction(state, funcName)
-    if state and state[funcName] then
-        assert(type(state[funcName]) == "function", funcName .. " must be a function")
+local function assertFunction(state, funcName, ...)
+    local func = state[funcName]
+    if func then
+        return func(state, ...)
     end
 end
 
@@ -22,191 +19,111 @@ function GameStateManager:getState()
 end
 
 function GameStateManager:setState(newState)
-    assertState(newState)
-
-    if self.currentState then
-        if self.currentState.quit then
-            assertFunction(self.currentState, "quit")
-            self.currentState:quit()
-        end
-    end
-
     if self.currentState == newState then return end
-
+    
+    -- Quit current state
     if self.currentState then
+        assertFunction(self.currentState, "quit")
         table.insert(self.stateStack, self.currentState)
     end
 
+    -- Set and enter new state
     self.currentState = newState
-
-    if self.currentState then
-        assertFunction(self.currentState, "enter")
-        if self.currentState.enter then
-            self.currentState:enter()
-        end
+    
+    if newState then
+        assertFunction(newState, "enter")
     end
 end
 
 function GameStateManager:reloadState()
     if self.currentState then
         assertFunction(self.currentState, "enter")
-        if self.currentState.enter then
-            self.currentState:enter()
-        end
     end
 end
 
 function GameStateManager:revertState()
     if #self.stateStack > 0 then
-        if self.currentState.quit then
+        if self.currentState then
             assertFunction(self.currentState, "quit")
-            self.currentState:quit()
         end
         
         self.currentState = table.remove(self.stateStack)
         
         if self.currentState then
             assertFunction(self.currentState, "enter")
-            if self.currentState.enter then
-                self.currentState:enter()
-            end
         end
     end
 end
 
 function GameStateManager:mousemoved(x, y, ...)
-    assert(type(x) == "number", "x must be a number")
-    assert(type(y) == "number", "y must be a number")
-
     if self.currentState then
-        assertFunction(self.currentState, "mousemoved")
-        if self.currentState.mousemoved then
-            self.currentState:mousemoved(x, y, ...)
-        end
+        assertFunction(self.currentState, "mousemoved", x, y, ...)
     end
 end
 
 function GameStateManager:joystickpressed(js, button)
     if self.currentState then
-        assertFunction(self.currentState, "joystickpressed")
-        if self.currentState.joystickpressed then
-            self.currentState:joystickpressed(js, button)
-        end
+        assertFunction(self.currentState, "joystickpressed", js, button)
     end
 end
 
 function GameStateManager:wheelmoved(x, y)
-    assert(type(x) == "number", "x must be a number")
-    assert(type(y) == "number", "y must be a number")
-
     if self.currentState then
-        assertFunction(self.currentState, "wheelmoved")
-        if self.currentState.wheelmoved then
-            self.currentState:wheelmoved(x, y)
-        end
+        assertFunction(self.currentState, "wheelmoved", x, y)
     end
 end
 
 function GameStateManager:mousepressed(x, y, button)
-    assert(type(x) == "number", "x must be a number")
-    assert(type(y) == "number", "y must be a number")
-    assert(type(button) == "number", "button must be a number")
-
     if self.currentState then
-        assertFunction(self.currentState, "mousepressed")
-        if self.currentState.mousepressed then
-            self.currentState:mousepressed(x, y, button)
-        end
+        assertFunction(self.currentState, "mousepressed", x, y, button)
     end
 end
 
 function GameStateManager:mousereleased(x, y, button)
-    assert(type(x) == "number", "x must be a number")
-    assert(type(y) == "number", "y must be a number")
-    assert(type(button) == "number", "button must be a number")
-
     if self.currentState then
-        assertFunction(self.currentState, "mousereleased")
-        if self.currentState.mousereleased then
-            self.currentState:mousereleased(x, y, button)
-        end
+        assertFunction(self.currentState, "mousereleased", x, y, button)
     end
 end
 
 function GameStateManager:keypressed(key, scancode, isrepeat)
-    assert(type(key) == "string", "key must be a string")
-    assert(type(scancode) == "string", "scancode must be a string")
-    assert(type(isrepeat) == "boolean", "isrepeat must be a boolean")
-
     if self.currentState then
-        assertFunction(self.currentState, "keypressed")
-        if self.currentState.keypressed then
-            self.currentState:keypressed(key, scancode, isrepeat)
-        end
+        assertFunction(self.currentState, "keypressed", key, scancode, isrepeat)
     end
 end
 
 function GameStateManager:keyreleased(key, scancode)
-    assert(type(key) == "string", "key must be a string")
-    assert(type(scancode) == "string", "scancode must be a string")
-
     if self.currentState then
-        assertFunction(self.currentState, "keyreleased")
-        if self.currentState.keyreleased then
-            self.currentState:keyreleased(key, scancode)
-        end
+        assertFunction(self.currentState, "keyreleased", key, scancode)
     end
 end
 
 function GameStateManager:textinput(text)
-    assert(type(text) == "string", "text must be a string")
-
     if self.currentState then
-        assertFunction(self.currentState, "textinput")
-        if self.currentState.textinput then
-            self.currentState:textinput(text)
-        end
+        assertFunction(self.currentState, "textinput", text)
     end
 end
 
 function GameStateManager:update(dt)
-    assert(type(dt) == "number", "dt must be a number")
-
     if self.currentState then
-        assertFunction(self.currentState, "update")
-        if self.currentState.update then
-            self.currentState:update(dt)
-        end
+        assertFunction(self.currentState, "update", dt)
     end
 end
 
 function GameStateManager:quit()
     if self.currentState then
         assertFunction(self.currentState, "quit")
-        if self.currentState.quit then
-            self.currentState:quit()
-        end
     end
 end
 
 function GameStateManager:draw()
     if self.currentState then
         assertFunction(self.currentState, "draw")
-        if self.currentState.draw then
-            self.currentState:draw()
-        end
     end
 end
 
 function GameStateManager:resize(w, h)
-    assert(type(w) == "number", "w must be a number")
-    assert(type(h) == "number", "h must be a number")
-
     if self.currentState then
-        assertFunction(self.currentState, "resize")
-        if self.currentState.resize then
-            self.currentState:resize(w, h)
-        end
+        assertFunction(self.currentState, "resize", w, h)
     end
 end
 
